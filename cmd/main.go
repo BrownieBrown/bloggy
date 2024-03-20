@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/BrownieBrown/bloggy/internal/api/handler"
 	"github.com/BrownieBrown/bloggy/internal/api/middleware"
 	"github.com/BrownieBrown/bloggy/internal/api/router"
 	"github.com/BrownieBrown/bloggy/internal/api/server"
@@ -16,8 +17,10 @@ func main() {
 	}
 
 	cfg := config.LoadConfig()
+	hh := handler.NewHealthHandler(cfg)
+	eh := handler.NewErrorHandler(cfg)
 	r := router.NewRouter()
-	r.Init()
+	r.Init(hh, eh)
 	corsRouter := middleware.Cors(r)
 
 	srv := server.NewServer(cfg, corsRouter)
