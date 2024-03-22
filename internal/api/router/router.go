@@ -17,11 +17,13 @@ func NewRouter() *Router {
 	}
 }
 
-func (r *Router) Init(hh *handler.HealthHandler, eh *handler.ErrorHandler) {
+func (r *Router) Init(hh *handler.HealthHandler, eh *handler.ErrorHandler, uh *handler.UserHandler) {
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 
 	r.HandleFunc("GET /v1/readiness", hh.HealthCheck)
 	r.HandleFunc("GET /v1/err", eh.HandleError)
+
+	r.HandleFunc("POST /v1/users", uh.CreateUser)
 }

@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"github.com/BrownieBrown/bloggy/internal/api/handler"
 	"github.com/BrownieBrown/bloggy/internal/api/router"
 	"github.com/BrownieBrown/bloggy/internal/models"
 	"net/http"
@@ -39,16 +40,33 @@ func TestStart(t *testing.T) {
 
 func createServer() *Server {
 	cfg := loadConfig()
-	r := router.NewRouter()
-	r.Init()
+	r := initRouter(cfg)
 
 	return NewServer(cfg, r)
 }
 
 func loadConfig() *models.Config {
 	return &models.Config{
-		ApiConfig: models.ApiConfig{
+		ApiConfig: &models.ApiConfig{
 			Port: port,
 		},
 	}
+}
+
+func initRouter(cfg *models.Config) *router.Router {
+	r := router.NewRouter()
+	hh := &handler.HealthHandler{
+		Config: cfg,
+	}
+	eh := &handler.ErrorHandler{
+		Config: cfg,
+	}
+
+	uh := &handler.UserHandler{
+		Config: cfg,
+	}
+
+	r.Init(hh, eh, uh)
+
+	return r
 }
